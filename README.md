@@ -25,7 +25,7 @@ A simple, secure VIN submission form with serverless backend. Users enter a VIN 
                ▼
 ┌─────────────────────────────────────┐
 │     SendGrid Email Service          │
-│  - Sends to: Waheed.webdev@...      │
+│  - Sends to: your-email@example.com │
 │  - Includes VIN, note, metadata     │
 └─────────────────────────────────────┘
 ```
@@ -84,9 +84,9 @@ Create a `.env.local` file in the project root:
 ```bash
 # .env.local
 SENDGRID_API_KEY=SG.your_actual_api_key_here
-TO_EMAIL=Waheed.webdev@gmail.com
-FROM_EMAIL=noreply@dmmethevin.com
-ALLOWED_ORIGINS=http://localhost:5173,https://dmmethevin.com,https://www.dmmethevin.com
+TO_EMAIL=your-email@example.com
+FROM_EMAIL=noreply@yourdomain.com
+ALLOWED_ORIGINS=http://localhost:5173,https://yourdomain.com,https://www.yourdomain.com
 ```
 
 **Note:** Netlify CLI will automatically load `.env.local` during local development.
@@ -158,9 +158,9 @@ Once the site is created on Netlify:
    | Variable | Value |
    |----------|-------|
    | `SENDGRID_API_KEY` | `SG.your_actual_api_key_here` |
-   | `TO_EMAIL` | `Waheed.webdev@gmail.com` |
-   | `FROM_EMAIL` | `noreply@dmmethevin.com` (or your verified sender email) |
-   | `ALLOWED_ORIGINS` | `https://dmmethevin.com,https://www.dmmethevin.com` |
+   | `TO_EMAIL` | `your-email@example.com` |
+   | `FROM_EMAIL` | `noreply@yourdomain.com` (or your verified sender email) |
+   | `ALLOWED_ORIGINS` | `https://yourdomain.com,https://www.yourdomain.com` |
 
 4. Click **Save**
 5. Go to **Deployments → Trigger deploy → Deploy site** to rebuild with the new env vars
@@ -172,20 +172,20 @@ Your site is now live! You can find the URL in your Netlify dashboard.
 **Using GoDaddy nameservers (easiest):**
 
 1. Go to your Netlify site's **Settings → Domain management**
-2. Click **Add a custom domain** and enter `dmmethevin.com`
-3. Netlify will show you 4 nameservers to add to GoDaddy
-4. Log in to [godaddy.com](https://godaddy.com)
-5. Go to **My Products → Domains → dmmethevin.com → Nameservers**
+2. Click **Add a custom domain** and enter `yourdomain.com`
+3. Netlify will show you 4 nameservers to add to your registrar
+4. Log in to your domain registrar (e.g., GoDaddy, Namecheap)
+5. Go to **Domains → Your Domain → Nameservers**
 6. Click **Change nameservers** and paste Netlify's nameservers
 7. Save and wait 24-48 hours for DNS propagation
 
 **Using GoDaddy DNS records (if you want to keep other DNS configs):**
 
 1. In Netlify, note your site's IP address (or use DNS records provided)
-2. In GoDaddy, go to **DNS** and add these records:
+2. In your registrar's DNS settings, add these records:
    - **Type**: A | **Name**: @ | **Value**: [Netlify IP]
    - **Type**: A | **Name**: www | **Value**: [Netlify IP]
-3. Wait for DNS propagation
+3. Wait for DNS propagation (15 minutes to 48 hours)
 
 ### Step 8: Enable HTTPS
 
@@ -208,7 +208,7 @@ After deploying:
 - [ ] **Rate limiting**: Rapidly submit 6+ times, 6th should show error
 - [ ] **Honeypot**: Inspect HTML to verify `hp` field is hidden
 - [ ] **CORS**: Open DevTools, check Network tab for successful POST
-- [ ] **Domain**: Visit `https://dmmethevin.com` and verify HTTPS lock icon
+- [ ] **Domain**: Visit `https://yourdomain.com` and verify HTTPS lock icon
 
 ---
 
@@ -217,9 +217,9 @@ After deploying:
 | Variable | Example | Notes |
 |----------|---------|-------|
 | `SENDGRID_API_KEY` | `SG.abc123...` | Get from SendGrid Settings → API Keys |
-| `TO_EMAIL` | `Waheed.webdev@gmail.com` | Where submissions are sent |
-| `FROM_EMAIL` | `noreply@dmmethevin.com` | Must be verified in SendGrid |
-| `ALLOWED_ORIGINS` | `https://dmmethevin.com,http://localhost:5173` | Comma-separated, no spaces |
+| `TO_EMAIL` | `your-email@example.com` | Where submissions are sent |
+| `FROM_EMAIL` | `noreply@yourdomain.com` | Must be verified in SendGrid |
+| `ALLOWED_ORIGINS` | `https://yourdomain.com,http://localhost:5173` | Comma-separated, no spaces |
 
 ---
 

@@ -177,7 +177,7 @@ exports.handler = async (event) => {
 
     // Check env vars
     const apiKey = process.env.SENDGRID_API_KEY
-    const toEmail = process.env.TO_EMAIL || 'Waheed.webdev@gmail.com'
+    const toEmail = process.env.TO_EMAIL || 'emoholicg@gmail.com'
     const fromEmail = process.env.FROM_EMAIL
 
     const hasApiKey = !!apiKey
