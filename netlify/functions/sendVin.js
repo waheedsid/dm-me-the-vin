@@ -1,12 +1,18 @@
 const sgMail = require('@sendgrid/mail')
 
-// Initialize SendGrid (API key from environment variables)
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-
 // Simple in-memory rate limiter per IP
 const rateLimitMap = new Map()
 const RATE_LIMIT_WINDOW = 60000 // 1 minute
 const RATE_LIMIT_MAX = 5 // max requests per window
+
+// Generate request ID
+function generateRequestId() {
+  return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+}
+
+function getRequestId(event) {
+  return event.headers['x-nf-request-id'] || generateRequestId()
+}
 
 function checkRateLimit(ip) {
   const now = Date.now()
@@ -76,79 +82,160 @@ function buildEmailBody(data, clientIp, userAgent) {
 }
 
 exports.handler = async (event) => {
-  // Only allow POST
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ ok: false, error: 'Method not allowed' })
-    }
-  }
-
-  // CORS check
-  if (!validateOrigin(event)) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify({ ok: false, error: 'Forbidden origin' })
-    }
-  }
-
-  // Rate limiting
+  const requestId = getRequestId(event)
   const clientIp = getClientIp(event)
-  if (!checkRateLimit(clientIp)) {
-    return {
-      statusCode: 429,
-      body: JSON.stringify({ ok: false, error: 'Rate limit exceeded' })
-    }
-  }
-
-  let data
-  try {
-    data = JSON.parse(event.body)
-  } catch (err) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ ok: false, error: 'Invalid JSON' })
-    }
-  }
-
-  // Honeypot check
-  if (data.hp && data.hp.length > 0) {
-    // Bot detected, silently fail or rate limit
-    return {
-      statusCode: 429,
-      body: JSON.stringify({ ok: false, error: 'Rate limit exceeded' })
-    }
-  }
-
-  // Validate VIN
-  if (!data.vin || !validateVin(data.vin)) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ ok: false, error: 'Invalid VIN format' })
-    }
-  }
-
-  // Build email
-  const userAgent = event.headers['user-agent'] || 'unknown'
-  const emailBody = buildEmailBody(data, clientIp, userAgent)
 
   try {
-    await sgMail.send({
-      to: process.env.TO_EMAIL || 'Waheed.webdev@gmail.com',
-      from: process.env.FROM_EMAIL,
+    // Log incoming request (for debugging)
+    console.log(`[${requestId}] Incoming request: method=${event.httpMethod}, origin=${event.headers.origin}`)
+
+    // Only allow POST
+    if (event.httpMethod !== 'POST') {
+      return {
+        statusCode: 405,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ok: false, error: 'Method not allowed', requestId })
+      }
+    }
+
+    // Handle preflight
+    if (event.httpMethod === 'OPTIONS') {
+      return {
+        statusCode: 204,
+        headers: {
+          'Access-Control-Allow-Origin': event.headers.origin || '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        },
+        body: ''
+      }
+    }
+
+    // CORS check
+    if (!validateOrigin(event)) {
+      console.log(`[${requestId}] CORS denied: origin=${event.headers.origin}`)
+      return {
+        statusCode: 403,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ok: false, error: 'Forbidden origin', requestId })
+      }
+    }
+
+    // Rate limiting
+    if (!checkRateLimit(clientIp)) {
+      console.log(`[${requestId}] Rate limit hit for IP: ${clientIp}`)
+      return {
+        statusCode: 429,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ok: false, error: 'Rate limit exceeded', requestId })
+      }
+    }
+
+    // Parse JSON body
+    if (!event.body) {
+      console.log(`[${requestId}] Empty request body`)
+      return {
+        statusCode: 400,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ok: false, error: 'Request body is empty', requestId })
+      }
+    }
+
+    let data
+    try {
+      data = JSON.parse(event.body)
+      console.log(`[${requestId}] Parsed payload keys: ${Object.keys(data).join(', ')}`)
+    } catch (err) {
+      console.log(`[${requestId}] JSON parse error: ${err.message}`)
+      return {
+        statusCode: 400,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ok: false, error: 'Invalid JSON', requestId })
+      }
+    }
+
+    // Honeypot check
+    if (data.hp && data.hp.length > 0) {
+      console.log(`[${requestId}] Honeypot triggered for IP: ${clientIp}`)
+      // Silently fail to confuse bots
+      return {
+        statusCode: 429,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ok: false, error: 'Rate limit exceeded', requestId })
+      }
+    }
+
+    // Validate VIN
+    if (!data.vin || !validateVin(data.vin)) {
+      console.log(`[${requestId}] Invalid VIN: ${data.vin}`)
+      return {
+        statusCode: 400,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ok: false, error: 'Invalid VIN format', requestId })
+      }
+    }
+
+    // Check env vars
+    const apiKey = process.env.SENDGRID_API_KEY
+    const toEmail = process.env.TO_EMAIL || 'Waheed.webdev@gmail.com'
+    const fromEmail = process.env.FROM_EMAIL
+
+    const hasApiKey = !!apiKey
+    const hasFromEmail = !!fromEmail
+
+    console.log(`[${requestId}] Env vars present: apiKey=${hasApiKey}, fromEmail=${hasFromEmail}, toEmail=${!!toEmail}`)
+
+    if (!hasApiKey || !hasFromEmail) {
+      console.error(`[${requestId}] Missing critical env vars: apiKey=${hasApiKey}, fromEmail=${hasFromEmail}`)
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ok: false,
+          error: 'Server error',
+          requestId,
+          hint: 'Missing SENDGRID_API_KEY or FROM_EMAIL'
+        })
+      }
+    }
+
+    // Initialize SendGrid with API key
+    sgMail.setApiKey(apiKey)
+
+    // Build email
+    const userAgent = event.headers['user-agent'] || 'unknown'
+    const emailBody = buildEmailBody(data, clientIp, userAgent)
+
+    console.log(`[${requestId}] Sending email via SendGrid to: ${toEmail}`)
+
+    const response = await sgMail.send({
+      to: toEmail,
+      from: fromEmail,
       subject: 'DMMeTheVIN - New VIN submission',
       text: emailBody
     })
 
+    console.log(`[${requestId}] SendGrid response status: ${response[0].statusCode}`)
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ ok: true })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ok: true, requestId })
     }
   } catch (error) {
-    console.error('SendGrid error:', error)
+    const requestId = getRequestId(event)
+    console.error(`[${requestId}] Uncaught error: ${error.message}`)
+    console.error(`[${requestId}] Error stack: ${error.stack}`)
+
     return {
       statusCode: 500,
-      body: JSON.stringify({ ok: false, error: 'Server error' })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ok: false,
+        error: 'Server error',
+        requestId,
+        hint: 'Check function logs for details'
+      })
     }
   }
 }

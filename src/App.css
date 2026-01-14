@@ -1,34 +1,60 @@
 .container {
-  max-width: 500px;
+  max-width: 520px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 3rem 1.5rem;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.04);
+  padding: 2.5rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
 .title {
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 800;
   color: var(--color-primary);
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
   letter-spacing: -0.5px;
 }
 
-.banner {
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+  text-align: center;
+  margin-bottom: 2rem;
   font-weight: 500;
+}
+
+.banner {
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
   text-align: center;
   animation: slideDown 0.3s ease-out;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-12px);
   }
   to {
     opacity: 1;
@@ -37,16 +63,160 @@
 }
 
 .banner.success {
-  background-color: #dcfce7;
-  color: var(--color-success);
-  border: 1px solid #bbf7d0;
+  background: linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%);
+  color: #15803d;
+  border: 1px solid #86efac;
 }
 
 .banner.error {
-  background-color: #fee2e2;
-  color: var(--color-error);
-  border: 1px solid #fecaca;
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  border: 1px solid #fca5a5;
 }
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.form-group label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.required::after {
+  content: '*';
+  color: var(--color-error);
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 0.875rem 1rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  background-color: white;
+  color: var(--color-text);
+  letter-spacing: 0.3px;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #9ca3af;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  background-color: #f0f4ff;
+}
+
+.form-group input:disabled,
+.form-group textarea:disabled {
+  background-color: var(--color-bg);
+  color: var(--color-text-light);
+  cursor: not-allowed;
+  border-color: #e5e7eb;
+}
+
+.helper-text {
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+  margin-top: 0.25rem;
+  font-weight: 400;
+}
+
+.error-text {
+  font-size: 0.85rem;
+  color: var(--color-error);
+  margin-top: 0.5rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.error-text::before {
+  content: '⚠';
+  font-size: 0.875rem;
+}
+
+.submit-btn {
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  text-transform: uppercase;
+  font-size: 0.95rem;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+  transform: translateY(-2px);
+}
+
+.submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.submit-btn:disabled {
+  background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+  cursor: not-allowed;
+  opacity: 0.7;
+  box-shadow: none;
+  transform: none;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 2rem 1rem;
+  }
+
+  .card {
+    padding: 1.75rem;
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .form {
+    gap: 1.25rem;
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    font-size: 16px;
+  }
 
 .form {
   display: flex;

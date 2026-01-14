@@ -21,8 +21,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--color-bg);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   color: var(--color-text);
+  min-height: 100vh;
 }
 
 html {

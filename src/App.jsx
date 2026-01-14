@@ -62,67 +62,74 @@ export default function App() {
 
   return (
     <div className="container">
-      <h1 className="title">DMMeTheVIN</h1>
+      <div className="card">
+        <h1 className="title">DMMeTheVIN</h1>
 
-      {status && (
-        <div className={`banner ${status.ok ? 'success' : 'error'}`}>
-          {status.ok ? '✓ Submitted' : `✗ ${status.error}`}
-        </div>
-      )}
+        {status && (
+          <div className={`banner ${status.ok ? 'success' : 'error'}`}>
+            {status.ok ? '✓ Submitted successfully!' : `✗ ${status.error}`}
+          </div>
+        )}
 
-      <form onSubmit={handleSubmit} className="form">
-        <div className="form-group">
-          <label htmlFor="vin">VIN Number *</label>
+        <form onSubmit={handleSubmit} className="form">
+          <div className="form-group">
+            <label htmlFor="vin" className="required">VIN Number</label>
+            <input
+              id="vin"
+              type="text"
+              value={vin}
+              onChange={(e) => setVin(e.target.value)}
+              placeholder="e.g., 1HGBH41JXMN109186"
+              disabled={sending}
+              maxLength="17"
+            />
+            <p className="helper-text">17 characters (A-Z, 0-9, no I, O, Q)</p>
+            {vinError && <p className="error-text">Invalid VIN format</p>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              disabled={sending}
+            />
+            <p className="helper-text">Optional — for your reference only</p>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="note">Note</label>
+            <textarea
+              id="note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Additional info about this VIN..."
+              disabled={sending}
+              rows={3}
+            />
+            <p className="helper-text">Optional</p>
+          </div>
+
+          {/* Honeypot field (hidden from user) */}
           <input
-            id="vin"
             type="text"
-            value={vin}
-            onChange={(e) => setVin(e.target.value)}
-            placeholder="e.g., 1HGBH41JXMN109186"
-            disabled={sending}
+            name="hp"
+            value={hp}
+            onChange={(e) => setHp(e.target.value)}
+            style={{ display: 'none' }}
+            tabIndex="-1"
+            autoComplete="off"
+            aria-hidden="true"
           />
-          {vinError && <p className="error-text">VIN must be 17 characters (A-Z 0-9, excluding I, O, Q)</p>}
-        </div>
 
-        <div className="form-group">
-          <label htmlFor="email">Email (optional)</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="your@email.com"
-            disabled={sending}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="note">Note (optional)</label>
-          <textarea
-            id="note"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Additional info..."
-            disabled={sending}
-            rows={4}
-          />
-        </div>
-
-        {/* Honeypot field (hidden from user) */}
-        <input
-          type="text"
-          name="hp"
-          value={hp}
-          onChange={(e) => setHp(e.target.value)}
-          style={{ display: 'none' }}
-          tabIndex="-1"
-          autoComplete="off"
-        />
-
-        <button type="submit" disabled={sending || !vin || vinError} className="submit-btn">
-          {sending ? 'Sending...' : 'Submit VIN'}
-        </button>
-      </form>
+          <button type="submit" disabled={sending || !vin || vinError} className="submit-btn">
+            {sending ? 'Submitting...' : 'Submit VIN'}
+          </button>
+        </form>
+      </div>
     </div>
   )
 }
