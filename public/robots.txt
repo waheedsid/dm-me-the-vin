@@ -1,0 +1,19 @@
+# robots.txt
+# Allow all search engines to crawl the site
+
+User-agent: *
+Allow: /
+Disallow: /.netlify/
+
+# Sitemap location
+Sitemap: https://dmmethevin.com/sitemap.xml
+
+# Common bot rules
+User-agent: MJ12bot
+Crawl-delay: 1
+
+User-agent: AhrefsBot
+Crawl-delay: 1
+
+User-agent: SemrushBot
+Crawl-delay: 1

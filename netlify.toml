@@ -7,7 +7,37 @@
   command = "npm run dev"
   port = 5173
 
+# Cache assets with hashes (Vite adds content hashes)
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, immutable, max-age=31536000"
+
+# Cache non-hashed assets but revalidate
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), camera=(), microphone=()"
+
+# Cache other non-hashed resources
+[[headers]]
+  for = "/*.{css,js,svg,ico,webp,woff,woff2}"
+  [headers.values]
+    Cache-Control = "public, max-age=7200"
+
+# SPA routing - catch all and redirect to index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# API routes should not be cached
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
