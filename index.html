@@ -1,9 +1,95 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
+    <!-- Meta Tags -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DMMeTheVIN</title>
+    <meta name="description" content="Sell your car in 3 minutes. Enter your VIN, get an instant offer from local buyers. No dealers. No pressure. Fair pricing, fast response." />
+    <meta name="keywords" content="sell car for cash, car valuation by VIN, instant car offer, sell car online, no dealership" />
+    <meta name="author" content="DM Me The VIN" />
+    <meta name="theme-color" content="#0F1419" />
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://dmmethevin.com" />
+    <meta property="og:title" content="Sell Your Car in 3 Minutes | DM Me The VIN" />
+    <meta property="og:description" content="Get instant car offers using your VIN. No dealers, no haggling. Fair pricing from local buyers." />
+    <meta property="og:image" content="https://dmmethevin.com/og-image.jpg" />
+    <meta property="og:site_name" content="DM Me The VIN" />
+    
+    <!-- Twitter Card -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://dmmethevin.com" />
+    <meta property="twitter:title" content="Sell Your Car in 3 Minutes | DM Me The VIN" />
+    <meta property="twitter:description" content="Get instant car offers using your VIN. No dealers, no hassle." />
+    <meta property="twitter:image" content="https://dmmethevin.com/og-image.jpg" />
+    
+    <!-- Canonical -->
+    <link rel="canonical" href="https://dmmethevin.com" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    
+    <title>Sell Your Car in 3 Minutes | DM Me The VIN</title>
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX', {
+        'anonymize_ip': true,
+        'allow_google_signals': false
+      });
+      
+      // Track form submission
+      window.trackFormSubmission = function(success) {
+        gtag('event', 'form_submission', {
+          'event_category': 'vin_form',
+          'event_label': success ? 'success' : 'error'
+        });
+      };
+      
+      // Track VIN input focus
+      window.trackFormStart = function() {
+        gtag('event', 'form_start', {
+          'event_category': 'vin_form'
+        });
+      };
+    </script>
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "DM Me The VIN",
+      "url": "https://dmmethevin.com",
+      "logo": "https://dmmethevin.com/logo.png",
+      "description": "Sell your car instantly using your VIN. Get fair offers from local buyers. No dealers. No pressure.",
+      "sameAs": [
+        "https://facebook.com/dmmethevin",
+        "https://twitter.com/dmmethevin"
+      ]
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://dmmethevin.com",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://dmmethevin.com/?vin={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
